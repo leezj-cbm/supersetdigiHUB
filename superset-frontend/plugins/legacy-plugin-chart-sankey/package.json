@@ -29,8 +29,11 @@
     "access": "public"
   },
   "dependencies": {
+    "@applitools/eyes-storybook": "3.30.2",
+    "@cypress/react": "8.0.2",
     "d3": "^3.5.17",
-    "d3-sankey": "^0.4.2",
+    "d3-sankey": "^0.12.3",
+    "lerna": "8.1.6",
     "prop-types": "^15.8.1"
   },
   "peerDependencies": {
