@@ -24,4 +24,5 @@ export default function getBootstrapData(): BootstrapData {
   const appContainer = document.getElementById('app');
   const dataBootstrap = appContainer?.getAttribute('data-bootstrap');
   return dataBootstrap ? JSON.parse(dataBootstrap) : DEFAULT_BOOTSTRAP_DATA;
+
 }
