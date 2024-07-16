@@ -41,39 +41,55 @@ WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365
 # Set this API key to enable Mapbox visualizations
 MAPBOX_API_KEY = ''
 
-# Load Balancer - In SQLITE DB -Fixes the 'Failed to Fetch' Error In Development https://stackoverflow.com/questions/66689709/superset-there-was-an-error-fetching-the-favorite-status-failed-to-fetch
+# Load Balancer
 ENABLE_PROXY_FIX=True
 
+# Proxy Fix Configuration
+PROXY_FIX_CONFIG = {
+    "x_for": 1,
+    "x_proto": 1,
+    "x_host": 1,
+    "x_port": 1,
+    "x_prefix": 1,
+}
+
+DEBUG = True
+SESSION_COOKIE_SAMESITE ='None' #  https://github.com/apache/superset/issues/20319
+SESSION_COOKIE_HTTPONLY = True
+
+
+
 # Keycloak OAUTH
+
+#AUTH_TYPE = AUTH_DB
+AUTH_TYPE = AUTH_OAUTH
+
+import sys
+sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
 from custom_sso_security_manager import CustomSsoSecurityManager
 CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
 
-AUTH_TYPE = AUTH_DB
-AUTH_ROLE_ADMIN = 'My Admin Role Name'
-AUTH_ROLE_PUBLIC = 'My Public Role Name'
-
 AUTH_USER_REGISTRATION = True
-AUTH_USER_REGISTRATION_ROLE = "My Public Role Name"
-
-# registration configs
-AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
-AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+AUTH_USER_REGISTRATION_ROLE = "Gamma"
+AUTH_ROLES_SYNC_AT_LOGIN = True  # Sync roles at login
+AUTH_USER_REGISTRATION_ROLE_JMESPATH = "roles[*].name"
 
 OAUTH_PROVIDERS=[
      {
         "name": "keycloak",
         "icon": "fa-key",
-        "token_key": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJkNmMxYmY0NC1hMTIzLTQ5NWEtYTQ4Yy1hNDNmZDMxN2MzYmMifQ.eyJleHAiOjAsImlhdCI6MTcyMTA5NDg1MywianRpIjoiNGFlN2Y3N2ItOTcxZC00MmVkLWI2N2MtMmM0OGNjNzM4YTgyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9jYm0td2lsbG93bW9yZS1kZXYiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL2NibS13aWxsb3dtb3JlLWRldiIsInR5cCI6IlJlZ2lzdHJhdGlvbkFjY2Vzc1Rva2VuIiwicmVnaXN0cmF0aW9uX2F1dGgiOiJhdXRoZW50aWNhdGVkIn0.gkYsNZIq4RWlWCRtmqg2ftvg4StwuqRq313GaQhj3RU9-YNpRZOBBfYbSD8qHTUQPnSLpepVqEZiZje9pTf1fQ",
+        "token_key": "access_token",
         "remote_app": {
             "client_id": "supersetdigiHUB",
             "client_secret": "ZuAkVOJU7mg4Gc6OOda47TW4zUEbz9Mv",
-            "api_base_url": "https://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect",
+            "api_base_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect",
             "client_kwargs": {
                 "scope": "email profile"
             },
             "access_token_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token",
             "authorize_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/auth",
             "request_token_url": None,
+            "base_url": "https://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect",
         },
     },
 ]
