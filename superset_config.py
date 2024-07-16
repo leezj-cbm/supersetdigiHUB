@@ -82,7 +82,7 @@ OAUTH_PROVIDERS=[
         "remote_app": {
             "client_id": "supersetdigiHUB",
             "client_secret": "ZuAkVOJU7mg4Gc6OOda47TW4zUEbz9Mv",
-            "api_base_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect",
+            "api_base_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/",
             "client_kwargs": {
                 "scope": "email profile"
             },
