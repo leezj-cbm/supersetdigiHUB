@@ -57,17 +57,20 @@ DEBUG = True
 SESSION_COOKIE_SAMESITE ='None' #  https://github.com/apache/superset/issues/20319
 SESSION_COOKIE_HTTPONLY = True
 
-
-
 # Keycloak OAUTH
-
-#AUTH_TYPE = AUTH_DB
-AUTH_TYPE = AUTH_OAUTH
-
 import sys
 sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
-from custom_sso_security_manager import CustomSsoSecurityManager
-CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
+
+#AUTH_TYPE = AUTH_DB
+AUTH_TYPE = AUTH_OID
+SECRET_KEY: 'SomethingNotEntirelySecret'
+OIDC_CLIENT_SECRETS =  '/home/zhenjianlee/projects/supersetdigiHUB/client_secret.json'
+OIDC_ID_TOKEN_COOKIE_SECURE = False
+OIDC_OPENID_REALM: "cbm-willowmore-dev"
+OIDC_INTROSPECTION_AUTH_METHOD: 'client_secret_post'
+
+from keycloak_security_manager import OIDCSecurityManager
+CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
 
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = "Gamma"
