@@ -63,7 +63,7 @@ sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
 
 #AUTH_TYPE = AUTH_DB
 AUTH_TYPE = AUTH_OID
-SECRET_KEY: 'SomethingNotEntirelySecret'
+SECRET_KEY: 'ZuAkVOJU7mg4Gc6OOda47TW4zUEbz9Mv'
 OIDC_CLIENT_SECRETS =  '/home/zhenjianlee/projects/supersetdigiHUB/client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_OPENID_REALM: "cbm-willowmore-dev"
@@ -71,7 +71,6 @@ OIDC_INTROSPECTION_AUTH_METHOD: 'client_secret_post'
 
 from keycloak_security_manager import OIDCSecurityManager
 CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
-
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = "Gamma"
 AUTH_ROLES_SYNC_AT_LOGIN = True  # Sync roles at login
@@ -84,7 +83,7 @@ OAUTH_PROVIDERS=[
         "token_key": "access_token",
         "remote_app": {
             "client_id": "supersetdigiHUB",
-            "client_secret": "ZuAkVOJU7mg4Gc6OOda47TW4zUEbz9Mv",
+            "client_secret": "QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3",
             "api_base_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/",
             "client_kwargs": {
                 "scope": "email profile"
@@ -107,3 +106,7 @@ AUTH_ROLES_SYNC_AT_LOGIN = True
 
 # force users to re-auth after 30min of inactivity (to keep roles in sync)
 PERMANENT_SESSION_LIFETIME = 1800
+
+
+"http://127.0.0.1:8088/oauth-authorized/keycloak",
+"http://localhost:8088/oauth-authorized/keycloak"
