@@ -7,7 +7,8 @@ from urllib.parse import quote
 from flask_appbuilder.views import ModelView, SimpleFormView, expose
 from flask import (
     redirect,
-    request
+    request,
+    make_response
 )
 import logging
 
@@ -43,11 +44,32 @@ class AuthOIDCView(AuthOIDView):
     @expose('/logout/', methods=['GET', 'POST'])
     def logout(self):
         logging.debug("🟡 KeyCloak_Security_Manager: Logout ")
-        oidc = self.appbuilder.sm.oid
-        oidc.logout()
-        super(AuthOIDCView, self).logout()
+        oidc = self.appbuilder.sm.oid   
+        # original
+        # --------
         redirect_url = request.url_root.strip('/') + self.appbuilder.get_url_for_login
         # return redirect(
         #     oidc.client_secrets.get('issuer') + '/protocol/openid-connect/logout?redirect_uri=' + quote(redirect_url))
-        return redirect(
-            oidc.client_secrets.get('issuer') + '/protocol/openid-connect/logout')
+        # return redirect(
+        #     oidc.client_secrets.get('issuer') + '/protocol/openid-connect/logout')
+        
+        # Use Flask-make response to delete cookie
+        # -----------------------------------------
+        client_id = oidc.client_secrets.get('client_id')
+        id_token_hint = oidc.get_access_token()
+        logging.debug(f"🟡 KeyCloak_Security_Manager: client_id {client_id} and id_token_hint={id_token_hint}")
+        cookie = request.cookies.get('session')
+        logging.debug(f"🟡 KeyCloak_Security_Manager: Attempting to delete cookie: {cookie}")
+        response = make_response(redirect(oidc.client_secrets.get('issuer') + 
+                                          '/protocol/openid-connect/logout?post_logout_redirect_uri='+
+                                          quote(redirect_url)+f"&client_id={client_id}&id_token_hint={id_token_hint}"))
+        #response = make_response(redirect(oidc.client_secrets.get('issuer') + '/protocol/openid-connect/logout'))
+        response.set_cookie('session',value='',max_age=0,expires=0, path='/',domain=request.host,secure=False, httponly=False, samesite=None)
+        response.delete_cookie('session',path='/',domain=request.host)
+        logging.debug(f"🟡 KeyCloak_Security_Manager: cookie is now {cookie} ") 
+        oidc.logout()
+        super(AuthOIDCView, self).logout()
+        return response
+    
+    
+    

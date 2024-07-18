@@ -10,6 +10,7 @@ from flask_appbuilder.security.manager import (
 APP_ICON = "/static/assets/images/CBM-Black.png"
 
 # Superset specific config
+#------------------------
 ROW_LIMIT = 5000
 
 # Flask App Builder configuration
@@ -53,11 +54,22 @@ PROXY_FIX_CONFIG = {
     "x_prefix": 1,
 }
 
+# Logging
 DEBUG = True
-SESSION_COOKIE_SAMESITE ='None' #  https://github.com/apache/superset/issues/20319
-SESSION_COOKIE_HTTPONLY = True
+
+# Security Configuration
+#-----------------------
+
+SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
+SESSION_COOKIE_SECURE = True  # Prevent cookie from being transmitted over non-tls?
+SESSION_COOKIE_SAMESITE: None
+
+AUTH_RATE_LIMITED= True
+RATELIMIT_ENABLED =True
+
 
 # Keycloak OAUTH
+#----------------
 import sys
 sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
 
@@ -65,7 +77,7 @@ sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
 AUTH_TYPE = AUTH_OID
 SECRET_KEY: 'QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3'
 OIDC_CLIENT_SECRETS =  '/home/zhenjianlee/projects/supersetdigiHUB/client_secret.json'
-OIDC_ID_TOKEN_COOKIE_SECURE = False
+OIDC_ID_TOKEN_COOKIE_SECURE = True
 OIDC_OPENID_REALM: "cbm-willowmore-dev"
 OIDC_INTROSPECTION_AUTH_METHOD: 'client_secret_post'
 
