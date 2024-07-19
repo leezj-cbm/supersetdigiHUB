@@ -98,7 +98,7 @@ OAUTH_PROVIDERS=[
             "client_secret": "QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3",
             "api_base_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/",
             "client_kwargs": {
-                "scope": "email profile"
+                "scope": "openid email profile"
             },
             "access_token_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token",
             "authorize_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/auth",
@@ -107,10 +107,10 @@ OAUTH_PROVIDERS=[
         },
     },
 ]
-# a mapping from the values of `userinfo["role_keys"]` to a list of FAB roles
+# Oauth Groups to Superset Roles
 AUTH_ROLES_MAPPING = {
-    "FAB_USERS": ["User"],
-    "FAB_ADMINS": ["Admin"],
+"superset_users": ["Gamma","Alpha"],
+"superset_admins": ["Admin"],
 }
 
 # if we should replace ALL the user's roles each login, or only on registration
@@ -118,3 +118,6 @@ AUTH_ROLES_SYNC_AT_LOGIN = True
 
 # force users to re-auth after 30min of inactivity (to keep roles in sync)
 PERMANENT_SESSION_LIFETIME = 1800
+
+# curl -k  http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token -d "grant_type=password" -d "client_id=supersetdigiHUB" -d "client_secret=QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3" -d "scope=openid" -d "username=zhenjianlee" -d "password=zhenjianlee"
+# curl -k  http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token -d "grant_type=client_credentials" -d "client_id=supersetdigiHUB" -d "client_secret=QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3" -d "scope=openid" 
