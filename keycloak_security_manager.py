@@ -1,3 +1,7 @@
+import logging
+import requests
+
+
 from flask_appbuilder.security.manager import AUTH_OID
 from superset.security import SupersetSecurityManager
 from flask_oidc import OpenIDConnect
@@ -9,9 +13,8 @@ from flask import (
     redirect,
     request,
     make_response,
+    session
 )
-import logging
-import requests
 
 class OIDCSecurityManager(SupersetSecurityManager):
 
@@ -46,37 +49,24 @@ class AuthOIDCView(AuthOIDView):
     @expose('/logout/', methods=['GET', 'POST'])
     def logout(self):
         logging.debug(f"🔵 KeyCloak_Security_Manager: Logout")
-        oidc = self.appbuilder.sm.oid   
-        redirect_url = request.url_root.strip('/') + self.appbuilder.get_url_for_login   
+        oidc = self.appbuilder.sm.oid    
         oidc.logout()
         super(AuthOIDCView, self).logout()
-        logout_user() #flask-login library
-        client_id = oidc.client_secrets.get('client_id')
-        id_token = self.get_id_token()
-        cookieInitial = request.cookies.get('session')
-        # log out redirect
+        # log out redirect , require params
+        #-----------------
+        # redirect_url = request.url_root.strip('/') + self.appbuilder.get_url_for_login  
+        # client_id = oidc.client_secrets.get('client_id')
+        # id_token = self.get_id_token()
         # response = make_response(redirect(oidc.client_secrets.get('issuer') + 
         #                                   '/protocol/openid-connect/logout?post_logout_redirect_uri='+
         #                                   quote(redirect_url)+f"&client_id={client_id}&id_token_hint={id_token}"))
+        
+        # log out no redirect
+        #-----------------
         response = make_response(redirect(oidc.client_secrets.get('issuer') + '/protocol/openid-connect/logout'))
-        self.modify_or_delete_cookie(response,cookieInitial)
+        session.clear()
         return response
     
-    def modify_or_delete_cookie(self,response,cookieInitial):
-        logging.debug(f"🔵 KeyCloak_Security_Manager: Attempting to delete / modify cookie ")
-        response.set_cookie('oidc_id_token',value='',max_age=0,expires=0, path='/',domain=request.host,secure=False, httponly=False, samesite=None)
-        response.delete_cookie('oidc_id_token',path='/',domain=request.host)
-        cookieAfter = request.cookies.get('session')
-        if cookieAfter == None :
-            logging.debug(f"🟢 KeyCloak_Security_Manager: Succesful cookie deletion")
-        elif cookieInitial != cookieAfter:
-            logging.debug(f"🟢 KeyCloak_Security_Manager: Succesful cookie modification")
-        else:
-            if cookieAfter == cookieInitial:
-                logging.debug(f"🔴 KeyCloak_Security_Manager: Unsuccesful cookie modification ")
-            else:
-                logging.debug(f"🔴 KeyCloak_Security_Manager: Unsuccesful cookie deletion ")    
-        
     def get_id_token(self):
         sm=self.appbuilder.sm
         oidc=sm.oid
