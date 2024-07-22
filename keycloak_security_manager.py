@@ -31,7 +31,6 @@ class AuthOIDCView(AuthOIDView):
         sm = self.appbuilder.sm
         oidc = sm.oid
         logging.debug("🔵 KeyCloak_Security_Manager: Login ")
-        
         @self.appbuilder.sm.oid.require_login 
         def handle_login():
             user = sm.auth_user_oid(oidc.user_getfield('email'))
@@ -65,7 +64,19 @@ class AuthOIDCView(AuthOIDView):
         #-----------------
         response = make_response(redirect(oidc.client_secrets.get('issuer') + '/protocol/openid-connect/logout'))
         session.clear()
+        if not session:
+            logging.debug(f"🟢 KeyCloak_Security_Manager: Session cleared")  
+        else:
+            logging.debug(f"🔴 KeyCloak_Security_Manager: Unable to clear session!")  
+         
         return response
+
+    # @expose('/logged-out/',methods=['GET','POST'])
+    # def logged_out(self):
+    #     logging.debug(f"🟢 KeyCloak_Security_Manager: logged-out")
+    #     session.clear()
+    #     return redirect('http://localhost:8088/login/')
+            
     
     def get_id_token(self):
         sm=self.appbuilder.sm
@@ -74,7 +85,6 @@ class AuthOIDCView(AuthOIDView):
         client_id = oidc.client_secrets.get('client_id')
         client_secret = oidc.client_secrets.get('client_secret')
         refresh_token=oidc.get_refresh_token()
-        
         data={
             'grant_type':'refresh_token',
             'client_id':client_id,
