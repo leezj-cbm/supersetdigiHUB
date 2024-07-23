@@ -34,13 +34,12 @@ class AuthOIDCView(AuthOIDView):
         @self.appbuilder.sm.oid.require_login 
         def handle_login():
             user = sm.auth_user_oid(oidc.user_getfield('email'))
-            userInfo =oidc.user_getinfo('cookie_id_token')
-            logging.debug(f"🔵 KeyCloak_Security_Manager: userInfo:{str(userInfo)}")
+            self.set_role_from_user_info()
             if user is None:
                 info = oidc.user_getinfo(['preferred_username', 'given_name', 'family_name', 'email'])
                 user = sm.add_user(info.get('preferred_username'), info.get('given_name'), info.get('family_name'),
                                    info.get('email'), sm.find_role('Gamma'))
-                logging.debug(f"🟡 KeyCloak_Security_Manager: User is None :{user}")
+                logging.debug(f"🟡 KeyCloak_Security_Manager: User is None , Create and add user:{user}")
             login_user(user, remember=False)
             return redirect(self.appbuilder.get_url_for_index)
         return handle_login()
@@ -68,15 +67,37 @@ class AuthOIDCView(AuthOIDView):
             logging.debug(f"🟢 KeyCloak_Security_Manager: Session cleared")  
         else:
             logging.debug(f"🔴 KeyCloak_Security_Manager: Unable to clear session!")  
+        #session.pop("oidc_auth_token",None) #alternative method , but issues during relogging
          
         return response
-
-    # @expose('/logged-out/',methods=['GET','POST'])
-    # def logged_out(self):
-    #     logging.debug(f"🟢 KeyCloak_Security_Manager: logged-out")
-    #     session.clear()
-    #     return redirect('http://localhost:8088/login/')
-            
+    
+    def set_role_from_user_info(self):
+        sm =self.appbuilder.sm
+        user_info= sm.oid.user_getinfo('cookie_id_token')
+        try:
+            user_roles=user_info['realm_access']['roles']
+            logging.debug(f"🟢 KeyCloak_Security_Manager: user_roles : {user_roles}")
+        except KeyError:
+            logging.debug(f"🔴 KeyCloak_Security_Manager: user_role Key Error")
+        
+        for user_role in user_roles:
+            if user_role == "superset_admins":
+                assign_role = "Admin"
+                break
+            elif user_role ==  "superset_users_alpha":
+                assign_role = "Alpha"
+                break
+            elif user_role == "superset_users_gamma":
+                assign_role  = "Gamma"
+                break
+            else:
+                assign_role ="Public"
+        pvms=sm._get_all_pvms()
+        logging.debug(f"🟢 KeyCloak_Security_Manager: user_roles : {assign_role}")
+        #sm.set_role(assign_role,self.return_true() ,pvms)
+        
+    def return_true(self):
+        return True
     
     def get_id_token(self):
         sm=self.appbuilder.sm
@@ -102,7 +123,9 @@ class AuthOIDCView(AuthOIDView):
         else:
             logging.debug(f"🟡 KeyCloak_Security_Manager: Could not obtain id_token , code :{response.status_code} message:{response.text} ") 
         return None
-            
+
+
+                  
         
         
     

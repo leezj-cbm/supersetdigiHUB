@@ -109,8 +109,9 @@ OAUTH_PROVIDERS=[
 ]
 # Oauth Groups to Superset Roles
 AUTH_ROLES_MAPPING = {
-"superset_users": ["Gamma","Alpha"],
 "superset_admins": ["Admin"],
+"superset_users_alpha": ["Alpha"],
+"superset_users_gamma": ["Gamma"],
 }
 
 # if we should replace ALL the user's roles each login, or only on registration
