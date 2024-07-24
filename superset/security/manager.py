@@ -2126,7 +2126,7 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         chart: Optional["Slice"] = None,
         database: Optional["Database"] = None,
         datasource: Optional["BaseDatasource"] = None,
-        query: Optional["Query"] = None,
+        query: Optional["Fau"] = None,
         query_context: Optional["QueryContext"] = None,
         table: Optional["Table"] = None,
         viz: Optional["BaseViz"] = None,
@@ -2703,3 +2703,56 @@ class SupersetSecurityManager(  # pylint: disable=too-many-public-methods
         return current_app.config["AUTH_ROLE_ADMIN"] in [
             role.name for role in self.get_user_roles()
         ]
+
+    # Prototype - 240724 - override FAB Base Security Manager
+    def auth_user_oid(self,email,userInfo):
+        """
+        OpenID user Authentication
+        :param email: user's email to authenticate
+        :type self: User model
+        """
+        user = self.find_user(email=email)
+        
+        if user and self.auth_roles_sync_at_login:
+            user.roles = self._oid_calculate_user_roles(userInfo)
+            logging.debug("🔵 Security.Manager: Calculated new roles for user='%s' as: %s", userInfo['username'], user.roles)
+        if user is None or (not user.is_active):
+            return None
+        else:
+            self.update_user_auth_stat(user)
+            
+            return user
+    
+    # Prototype - 240724 - Create new function for OID
+    def _oid_calculate_user_roles(self,userInfo):
+        user_role_objects = set()
+
+        # apply AUTH_ROLES_MAPPING
+        if len(self.auth_roles_mapping) > 0:
+            user_role_keys = userInfo.get("role_keys", [])
+            user_role_objects.update(self.get_roles_from_keys(user_role_keys))
+
+        # apply AUTH_USER_REGISTRATION_ROLE
+        if self.auth_user_registration:
+            registration_role_name = self.auth_user_registration_role
+
+            # if AUTH_USER_REGISTRATION_ROLE_JMESPATH is set,
+            # use it for the registration role
+            if self.auth_user_registration_role_jmespath:
+                import jmespath
+
+                registration_role_name = jmespath.search(
+                    self.auth_user_registration_role_jmespath, userInfo
+                )
+
+            # lookup registration role in flask db
+            fab_role = self.find_role(registration_role_name)
+            if fab_role:
+                user_role_objects.add(fab_role)
+            else:
+                logging.debug(
+                    "🔴 Can't find AUTH_USER_REGISTRATION role: %s", registration_role_name
+                )
+
+        return list(user_role_objects)
+        
