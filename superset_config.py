@@ -1,3 +1,5 @@
+import sys
+
 from flask_appbuilder.security.manager import (
     AUTH_DB,
     AUTH_LDAP,
@@ -5,6 +7,10 @@ from flask_appbuilder.security.manager import (
     AUTH_OID,
     AUTH_REMOTE_USER
 )
+
+
+sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
+from keycloak_security_manager import OIDCSecurityManager
 
 # App Icon
 APP_ICON = "/static/assets/images/CBM-Black.png"
@@ -66,3 +72,55 @@ SESSION_COOKIE_SAMESITE: None
 
 AUTH_RATE_LIMITED= True
 RATELIMIT_ENABLED =True
+
+# Keycloak OAUTH
+#----------------
+
+
+#AUTH_TYPE = AUTH_DB
+AUTH_TYPE = AUTH_OID
+SECRET_KEY: 'QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3'
+OIDC_CLIENT_SECRETS =  '/home/zhenjianlee/projects/supersetdigiHUB/client_secret.json'
+OIDC_ID_TOKEN_COOKIE_SECURE = True
+OIDC_OPENID_REALM: "cbm-willowmore-dev"
+OIDC_INTROSPECTION_AUTH_METHOD: 'client_secret_post'
+
+CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
+AUTH_USER_REGISTRATION = True
+AUTH_USER_REGISTRATION_ROLE = "Gamma"
+AUTH_ROLES_SYNC_AT_LOGIN = True  # Sync roles at login
+AUTH_USER_REGISTRATION_ROLE_JMESPATH = "roles[*].name"
+
+OAUTH_PROVIDERS=[
+     {
+        "name": "keycloak",
+        "icon": "fa-key",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": "supersetdigiHUB",
+            "client_secret": "QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3",
+            "api_base_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/",
+            "client_kwargs": {
+                "scope": "openid email profile"
+            },
+            "access_token_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token",
+            "authorize_url": "http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/auth",
+            "request_token_url": None,
+            "base_url": "https://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect",
+        },
+    },
+]
+# Oauth Groups to Superset Roles
+AUTH_ROLES_MAPPING = {
+"superset_admins": ["Admin"],
+"superset_users_alpha": ["Alpha"],
+"superset_users_gamma": ["Gamma"],
+}
+
+
+# force users to re-auth after 30min of inactivity (to keep roles in sync)
+PERMANENT_SESSION_LIFETIME = 1800
+
+# curl -k  http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token -d "grant_type=password" -d "client_id=supersetdigiHUB" -d "client_secret=QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3" -d "scope=openid" -d "username=zhenjianlee" -d "password=zhenjianlee"
+# curl -k  http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token -d "grant_type=client_credentials" -d "client_id=supersetdigiHUB" -d "client_secret=QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3" -d "scope=openid" 
+
