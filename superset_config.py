@@ -8,9 +8,9 @@ from flask_appbuilder.security.manager import (
     AUTH_REMOTE_USER
 )
 
+
 sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
 from keycloak_security_manager import OIDCSecurityManager
-
 
 # App Icon
 APP_ICON = "/static/assets/images/CBM-Black.png"
@@ -73,7 +73,6 @@ SESSION_COOKIE_SAMESITE: None
 AUTH_RATE_LIMITED= True
 RATELIMIT_ENABLED =True
 
-
 # Keycloak OAUTH
 #----------------
 
@@ -124,3 +123,4 @@ PERMANENT_SESSION_LIFETIME = 1800
 
 # curl -k  http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token -d "grant_type=password" -d "client_id=supersetdigiHUB" -d "client_secret=QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3" -d "scope=openid" -d "username=zhenjianlee" -d "password=zhenjianlee"
 # curl -k  http://localhost:8080/realms/cbm-willowmore-dev/protocol/openid-connect/token -d "grant_type=client_credentials" -d "client_id=supersetdigiHUB" -d "client_secret=QjKTzMT8yvMDOH8EqKpuHJSGp0tfBEX3" -d "scope=openid" 
+

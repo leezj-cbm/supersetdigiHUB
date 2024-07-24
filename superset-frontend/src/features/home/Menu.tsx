@@ -312,11 +312,16 @@ export function Menu({
                 tabIndex={-1}
               >
                 <img src={brand.icon} alt={brand.alt} style={{borderRadius:"10px"}}/>
+
+
                 {/* <img src="/static/assets/images/CBM-Black.png" style={{borderRadius:"10px"}}/> */}
               </GenericLink>
             ) : (
               <a className="navbar-brand" href={brand.path} tabIndex={-1}>
+
                 <img src={brand.icon} alt={brand.alt} style={{borderRadius:"10px"}} />
+
+
                 {/* <img src="/static/assets/images/CBM-Black.png" style={{borderRadius:"10px"}}/> */}
               </a>
             )}

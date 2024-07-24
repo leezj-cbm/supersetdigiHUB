@@ -166,7 +166,7 @@ export const DEFAULT_COMMON_BOOTSTRAP_DATA: CommonBootstrapData = {
     menu: [],
     brand: {
       path: '',
-      icon: '/static/assets/images/CBM-Black.png',
+      icon: '',
       alt: '',
       tooltip: '',
       text: '',
