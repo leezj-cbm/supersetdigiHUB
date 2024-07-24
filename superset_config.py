@@ -1,3 +1,5 @@
+import sys
+
 from flask_appbuilder.security.manager import (
     AUTH_DB,
     AUTH_LDAP,
@@ -5,6 +7,10 @@ from flask_appbuilder.security.manager import (
     AUTH_OID,
     AUTH_REMOTE_USER
 )
+
+sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
+from keycloak_security_manager import OIDCSecurityManager
+
 
 # App Icon
 APP_ICON = "/static/assets/images/CBM-Black.png"
@@ -70,8 +76,7 @@ RATELIMIT_ENABLED =True
 
 # Keycloak OAUTH
 #----------------
-import sys
-sys.path.append("/home/zhenjianlee/projects/supersetdigiHUB")
+
 
 #AUTH_TYPE = AUTH_DB
 AUTH_TYPE = AUTH_OID
@@ -81,7 +86,6 @@ OIDC_ID_TOKEN_COOKIE_SECURE = True
 OIDC_OPENID_REALM: "cbm-willowmore-dev"
 OIDC_INTROSPECTION_AUTH_METHOD: 'client_secret_post'
 
-from keycloak_security_manager import OIDCSecurityManager
 CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = "Gamma"
@@ -114,8 +118,6 @@ AUTH_ROLES_MAPPING = {
 "superset_users_gamma": ["Gamma"],
 }
 
-# if we should replace ALL the user's roles each login, or only on registration
-AUTH_ROLES_SYNC_AT_LOGIN = True
 
 # force users to re-auth after 30min of inactivity (to keep roles in sync)
 PERMANENT_SESSION_LIFETIME = 1800
