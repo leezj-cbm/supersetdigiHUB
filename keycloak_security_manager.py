@@ -81,22 +81,26 @@ class AuthOIDCView(AuthOIDView):
     def oauth_user_info(self, provider, response=None):
             logging.debug("🔵Oauth2 provider: {0}.".format(provider))
             if provider == 'keycloak':
-                # As example, this line request a GET to base_url + '/' + userDetails with Bearer  Authentication,
-        # and expects that authorization server checks the token, and response with user details
                 fields=['name','email','preferred_username','given_name','family_name','family_name','realm_access','sub']
                 me= self.appbuilder.sm.oid.user_getinfo(fields)
                 logging.debug("user_data: {0}".format(me))
-                res ={ 'name' : me['name'], 
-                        'email' : me['email'], 
-                        'id' : me['preferred_username'], 
-                        'username' : me['preferred_username'], 
-                        'first_name': me['given_name'], 
-                        'last_name': me['family_name'],
-                        'role_keys': me['realm_access']['roles'] }
+                if me:
+                    if me['realm_access'] and me['realm_access']['roles']:
+                        role_keys=me['realm_access']['roles']
+                    else:
+                        role_keys=None
+                    res ={ 'name' : me.get('name','NA'), 
+                            'email' : me.get('email','NA'), 
+                            'id' : me.get("id",'NA'), 
+                            'username' :me.get('preferred_username','NA'), 
+                            'first_name': me.get('given_name','NA'), 
+                            'last_name': me.get('family_name','NA'),
+                            'role_keys': role_keys }
+                else:
+                    me=None
                 logging.debug(f"🔵 KeyCloak_Security_Manager: oauth_user_info : {res}")
                 return res
     
-        
     def get_id_token(self):
         sm=self.appbuilder.sm
         oidc=sm.oid
