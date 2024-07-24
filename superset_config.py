@@ -1,7 +1,16 @@
+from flask_appbuilder.security.manager import (
+    AUTH_DB,
+    AUTH_LDAP,
+    AUTH_OAUTH,
+    AUTH_OID,
+    AUTH_REMOTE_USER
+)
+
 # App Icon
 APP_ICON = "/static/assets/images/CBM-Black.png"
 
 # Superset specific config
+#------------------------
 ROW_LIMIT = 5000
 
 # Flask App Builder configuration
@@ -33,5 +42,27 @@ WTF_CSRF_TIME_LIMIT = 60 * 60 * 24 * 365
 # Set this API key to enable Mapbox visualizations
 MAPBOX_API_KEY = ''
 
-# Load Balancer - In SQLITE DB -Fixes the 'Failed to Fetch' Error In Development https://stackoverflow.com/questions/66689709/superset-there-was-an-error-fetching-the-favorite-status-failed-to-fetch
-#ENABLE_PROXY_FIX=True
+# Load Balancer
+ENABLE_PROXY_FIX=True
+
+# Proxy Fix Configuration
+PROXY_FIX_CONFIG = {
+    "x_for": 1,
+    "x_proto": 1,
+    "x_host": 1,
+    "x_port": 1,
+    "x_prefix": 1,
+}
+
+# Logging
+DEBUG = True
+
+# Security Configuration
+#-----------------------
+
+SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
+SESSION_COOKIE_SECURE = True  # Prevent cookie from being transmitted over non-tls?
+SESSION_COOKIE_SAMESITE: None
+
+AUTH_RATE_LIMITED= True
+RATELIMIT_ENABLED =True
